@@ -206,7 +206,7 @@ export default function Home() {
             ))}
           </Box>
           <Box mt={5}>
-            <Typography variant="h6">Machine's Guesses:</Typography>
+            <Typography variant="h6">Machines Guesses:</Typography>
             {machineGuesses.map((machineGuess, index) => (
               <Typography key={index}>{machineGuess}</Typography>
             ))}
