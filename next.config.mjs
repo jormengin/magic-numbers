@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    output: 'export',
+    basePath: '/magic-numbers',
+    assetPrefix: '/magic-numbers/',
+  };
+  
+  export default nextConfig;
