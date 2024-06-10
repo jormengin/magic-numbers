@@ -4,5 +4,3 @@ const nextConfig = {
     basePath: '/magic-numbers',
     assetPrefix: '/magic-numbers/',
   };
-  
-  export default nextConfig;
