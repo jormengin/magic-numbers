@@ -1,4 +1,3 @@
-// src/app/single-player/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -12,6 +11,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import {
   generateMachineNumber,
@@ -39,11 +40,12 @@ const Leaderboard = ({
 };
 
 export default function SinglePlayer() {
-    const { setTitle } = usePageTitle(); // Use the setTitle function
+  const { setTitle } = usePageTitle(); // Use the setTitle function
   
-    useEffect(() => {
-      setTitle('Single Player');
-    }, [setTitle]);
+  useEffect(() => {
+    setTitle('Single Player');
+  }, [setTitle]);
+
   const [open, setOpen] = useState(false);
   const [secretNumber, setSecretNumber] = useState("");
   const [guess, setGuess] = useState("");
@@ -52,23 +54,21 @@ export default function SinglePlayer() {
   const [machineNumber, setMachineNumber] = useState("");
   const [tries, setTries] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [leaderboard, setLeaderboard] = useState<
-    { tries: number; time: number }[]
-  >([]);
+  const [leaderboard, setLeaderboard] = useState<{ tries: number; time: number }[]>([]);
   const [machineGuesses, setMachineGuesses] = useState<string[]>([]);
-  const [machineFeedback, setMachineFeedback] = useState<
-    { guess: string; feedback: string }[]
-  >([]);
+  const [machineFeedback, setMachineFeedback] = useState<{ guess: string; feedback: string }[]>([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   useEffect(() => {
     const initialNumberList = generateNumberList();
     setNumberList(initialNumberList);
     setMachineNumber(generateMachineNumber(initialNumberList));
-    const storedLeaderboard = JSON.parse(
-      localStorage.getItem("leaderboard") || "[]"
-    );
+    const storedLeaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
     setLeaderboard(storedLeaderboard);
   }, []);
 
@@ -78,7 +78,9 @@ export default function SinglePlayer() {
 
   const handleConfirmStartGame = () => {
     if (secretNumber.length !== 4 || new Set(secretNumber).size !== 4) {
-      alert("Secret number must be 4 unique digits");
+      setSnackbarMessage("Secret number must be 4 unique digits");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
     setOpen(false);
@@ -94,48 +96,38 @@ export default function SinglePlayer() {
       setGuess("");
       if (feedback === "4M 0C") {
         const endTime = new Date();
-        const timeTaken = Math.floor(
-          (endTime.getTime() - (startTime?.getTime() || 0)) / 1000
-        );
-        updateLeaderboard(
-          { tries: tries + 1, time: timeTaken },
-          setLeaderboard
-        );
-        alert(
-          `Congratulations! You guessed the number in ${
-            tries + 1
-          } tries and ${timeTaken} seconds.`
-        );
+        const timeTaken = Math.floor((endTime.getTime() - (startTime?.getTime() || 0)) / 1000);
+        updateLeaderboard({ tries: tries + 1, time: timeTaken }, setLeaderboard);
+        setSnackbarMessage(`Congratulations! You guessed the number in ${tries + 1} tries and ${timeTaken} seconds.`);
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         handleRestart();
       } else {
         handleMachineGuess();
       }
     } else {
-      alert("Guess must be 4 unique digits");
+      setSnackbarMessage("Guess must be 4 unique digits");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
   const handleMachineGuess = () => {
     const newNumberList = numberList.filter((number) => {
-      return machineFeedback.every(
-        ({ guess, feedback }) => checkGuess(number, guess) === feedback
-      );
+      return machineFeedback.every(({ guess, feedback }) => checkGuess(number, guess) === feedback);
     });
 
     const machineGuess = generateMachineNumber(newNumberList);
-
     const feedback = checkGuess(machineGuess, secretNumber);
 
-    setMachineGuesses([
-      ...machineGuesses,
-      `Machine's guess: ${machineGuess} - ${feedback}`,
-    ]);
+    setMachineGuesses([...machineGuesses, `Machine's guess: ${machineGuess} - ${feedback}`]);
     setMachineFeedback([...machineFeedback, { guess: machineGuess, feedback }]);
-
     setNumberList(newNumberList);
 
     if (feedback === "4M 0C") {
-      alert(`The machine guessed your number: ${machineGuess}. Game over!`);
+      setSnackbarMessage(`The machine guessed your number: ${machineGuess}. Game over!`);
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
       handleRestart();
     }
   };
@@ -154,22 +146,10 @@ export default function SinglePlayer() {
     setGameStarted(false);
     setOpen(true);
   };
-console.log(secretNumber);
+
   return (
-    <Container
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        justifyContent: "flex-start",
-      }}
-    >
-      <Dialog
-        disableEscapeKeyDown
-        maxWidth="xs"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+    <Container style={{ display: "flex", flexDirection: "column", minHeight: "100vh", justifyContent: "flex-start" }}>
+      <Dialog disableEscapeKeyDown maxWidth="xs" open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Enter Your Secret Number</DialogTitle>
         <DialogContent>
           <TextField
@@ -187,31 +167,11 @@ console.log(secretNumber);
           <Button onClick={handleConfirmStartGame}>Start Game</Button>
         </DialogActions>
       </Dialog>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        flex="1"
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          gap="20px"
-        >
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" flex="1">
+        <Box display="flex" flexDirection="column" alignItems="center" gap="20px">
           {secretNumber && gameStarted && (
-            <Box
-              style={{
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-                width: "100%",
-                padding: "20px",
-              }}
-            >
-              <Typography variant="h6">
-                Your Secret Number: {secretNumber}
-              </Typography>
+            <Box style={{ borderRadius: "5px", border: "1px solid #ccc", width: "100%", padding: "20px" }}>
+              <Typography variant="h6">Your Secret Number: {secretNumber}</Typography>
             </Box>
           )}
           <TextField
@@ -222,26 +182,13 @@ console.log(secretNumber);
             onChange={(e) => setGuess(e.target.value)}
             disabled={!gameStarted}
           />
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleGuess}
-            disabled={!gameStarted}
-          >
+          <Button fullWidth variant="contained" color="primary" onClick={handleGuess} disabled={!gameStarted}>
             Guess
           </Button>
           {gameStarted && (
             <>
               {userGuesses.length > 0 && (
-                <Box
-                  style={{
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    width: "100%",
-                    padding: "20px",
-                  }}
-                >
+                <Box style={{ borderRadius: "5px", border: "1px solid #ccc", width: "100%", padding: "20px" }}>
                   <Typography variant="h6">Your Guesses:</Typography>
                   {userGuesses.map((userGuess, index) => (
                     <Typography key={index}>{userGuess}</Typography>
@@ -249,14 +196,7 @@ console.log(secretNumber);
                 </Box>
               )}
               {machineGuesses.length > 0 && (
-                <Box
-                  style={{
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    width: "100%",
-                    padding: "20px",
-                  }}
-                >
+                <Box style={{ borderRadius: "5px", border: "1px solid #ccc", width: "100%", padding: "20px" }}>
                   <Typography variant="h6">Machines Guesses:</Typography>
                   {machineGuesses.map((machineGuess, index) => (
                     <Typography key={index}>{machineGuess}</Typography>
@@ -276,19 +216,20 @@ console.log(secretNumber);
         </Box>
       </Box>
       <Box alignSelf="flex-end" width="100%" p={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setShowLeaderboard(!showLeaderboard)}
-        >
+        <Button variant="contained" color="primary" onClick={() => setShowLeaderboard(!showLeaderboard)}>
           {showLeaderboard ? "Hide Leaderboard" : "Show Leaderboard"}
         </Button>
         {showLeaderboard && <Leaderboard leaderboard={leaderboard} />}
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
-function setTitle(arg0: string) {
-  throw new Error("Function not implemented.");
-}
-
