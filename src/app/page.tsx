@@ -12,7 +12,6 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import styles from "./page.module.css";
 
 const generateMachineNumber = (numberList: string[]) => {
   const randomIndex = Math.floor(Math.random() * numberList.length);
@@ -67,7 +66,7 @@ const updateLeaderboard = (
     leaderboard = leaderboard.slice(0, 10);
   }
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-  setLeaderboard(leaderboard); // Update the state to refresh the leaderboard
+  setLeaderboard(leaderboard);
 };
 
 const Leaderboard = ({
@@ -88,7 +87,7 @@ const Leaderboard = ({
 };
 
 export default function Home() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [secretNumber, setSecretNumber] = useState("");
   const [guess, setGuess] = useState("");
   const [userGuesses, setUserGuesses] = useState<string[]>([]);
@@ -104,6 +103,7 @@ export default function Home() {
     { guess: string; feedback: string }[]
   >([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
     const initialNumberList = generateNumberList();
@@ -116,7 +116,12 @@ export default function Home() {
   }, []);
 
   const handleStartGame = () => {
+    setOpen(true);
+  };
+
+  const handleConfirmStartGame = () => {
     setOpen(false);
+    setGameStarted(true);
     setStartTime(new Date());
   };
 
@@ -191,7 +196,8 @@ export default function Home() {
     setMachineNumber(generateMachineNumber(initialNumberList));
     setTries(0);
     setStartTime(new Date());
-    setOpen(true);
+    setGameStarted(false); // Reset game state
+    setOpen(true); // Open the dialog for a new game
   };
 
   return (
@@ -199,10 +205,16 @@ export default function Home() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        minHeight: "100vh",
+        justifyContent: "flex-start",
       }}
     >
-      <Dialog open={open} onClose={handleStartGame}>
+      <Dialog 
+      disableEscapeKeyDown
+      maxWidth="xs"
+      open={open} 
+      onClose={() => setOpen(false)
+      }>
         <DialogTitle>Enter Your Secret Number</DialogTitle>
         <DialogContent>
           <TextField
@@ -217,7 +229,7 @@ export default function Home() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleStartGame}>Start Game</Button>
+          <Button onClick={handleConfirmStartGame}>Start Game</Button>
         </DialogActions>
       </Dialog>
       <Box
@@ -227,60 +239,85 @@ export default function Home() {
         justifyContent="center"
         flex="1"
       >
-        <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          gap="20px"
+        >
+          {secretNumber && gameStarted && (
+            <Box
+              style={{
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+                width: "100%",
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6">
+                Your Secret Number: {secretNumber}
+              </Typography>
+            </Box>
+          )}
           <TextField
             fullWidth
             label="Your Guess"
             variant="outlined"
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
-            style={{ marginBottom: "20px" }}
+            disabled={!gameStarted} // Disable input if game hasn't started
           />
           <Button
             fullWidth
             variant="contained"
             color="primary"
             onClick={handleGuess}
-            style={{ marginBottom: "20px" }}
+            disabled={!gameStarted} // Disable button if game hasn't started
           >
             Guess
           </Button>
+          {gameStarted && (
+            <>
+              {userGuesses.length > 0 && (
+                <Box
+                  style={{
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    width: "100%",
+                    padding: "20px",
+                  }}
+                >
+                  <Typography variant="h6">Your Guesses:</Typography>
+                  {userGuesses.map((userGuess, index) => (
+                    <Typography key={index}>{userGuess}</Typography>
+                  ))}
+                </Box>
+              )}
+              {machineGuesses.length > 0 && (
+                <Box
+                  style={{
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    width: "100%",
+                    padding: "20px",
+                  }}
+                >
+                  <Typography variant="h6">Machines Guesses:</Typography>
+                  {machineGuesses.map((machineGuess, index) => (
+                    <Typography key={index}>{machineGuess}</Typography>
+                  ))}
+                </Box>
+              )}
+            </>
+          )}
           <Button
             fullWidth
             variant="contained"
             color="secondary"
-            onClick={handleRestart}
+            onClick={gameStarted ? handleRestart : handleStartGame} // Change behavior based on game state
           >
-            Restart
+            {gameStarted ? "Restart" : "Start"}
           </Button>
-          <Box
-            mt={5}
-            style={{
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-              width: "100%",
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6">Your Guesses:</Typography>
-            {userGuesses.map((userGuess, index) => (
-              <Typography key={index}>{userGuess}</Typography>
-            ))}
-          </Box>
-          <Box
-            mt={5}
-            style={{
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-              width: "100%",
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6">Machines Guesses:</Typography>
-            {machineGuesses.map((machineGuess, index) => (
-              <Typography key={index}>{machineGuess}</Typography>
-            ))}
-          </Box>
         </Box>
       </Box>
       <Box alignSelf="flex-end" width="100%" p={2}>
