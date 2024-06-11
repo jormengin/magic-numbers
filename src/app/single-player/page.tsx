@@ -264,7 +264,7 @@ export default function SinglePlayer() {
           <Button
             fullWidth
             variant="contained"
-            color="primary"
+            color={gameStarted ? "secondary" : "primary"}
             onClick={gameStarted ? handleRestart : handleStartGame}
           >
             {gameStarted ? "Restart" : "Start"}
