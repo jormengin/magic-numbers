@@ -125,8 +125,8 @@ export default function SinglePlayer() {
     setNumberList(newNumberList);
 
     if (feedback === "4M 0C") {
-      setSnackbarMessage(`The machine guessed your number: ${machineGuess}. Game over!`);
-      setSnackbarSeverity("success");
+      setSnackbarMessage(`The machine guessed your number: ${machineGuess}. Game over! The machine secret number was ${machineNumber}`);
+      setSnackbarSeverity("error");
       setSnackbarOpen(true);
       handleRestart();
     }
@@ -224,7 +224,7 @@ export default function SinglePlayer() {
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={snackbarOpen}
-        autoHideDuration={3000}
+        autoHideDuration={gameStarted ? 10000 : 3000}
         onClose={() => setSnackbarOpen(false)}
       >
         <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
