@@ -17,6 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const savedMode = localStorage.getItem('theme-mode') as PaletteMode;
     if (savedMode) {
       setMode(savedMode);
+    } else {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setMode(prefersDarkMode ? 'dark' : 'light');
     }
   }, []);
 
