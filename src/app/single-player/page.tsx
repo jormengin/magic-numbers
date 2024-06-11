@@ -222,8 +222,9 @@ export default function SinglePlayer() {
         {showLeaderboard && <Leaderboard leaderboard={leaderboard} />}
       </Box>
       <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={snackbarOpen}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
       >
         <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
