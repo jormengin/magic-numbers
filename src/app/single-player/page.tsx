@@ -77,6 +77,11 @@ export default function SinglePlayer() {
   };
 
   const handleConfirmStartGame = () => {
+    console.log(secretNumber);
+    if (secretNumber.length !== 4 || new Set(secretNumber).size !== 4) {
+      alert("Secret number must be 4 unique digits");
+      return;
+    }
     setOpen(false);
     setGameStarted(true);
     setStartTime(new Date());
@@ -150,7 +155,7 @@ export default function SinglePlayer() {
     setGameStarted(false);
     setOpen(true);
   };
-
+console.log(secretNumber);
   return (
     <Container
       style={{
