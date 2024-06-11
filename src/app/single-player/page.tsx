@@ -77,7 +77,6 @@ export default function SinglePlayer() {
   };
 
   const handleConfirmStartGame = () => {
-    console.log(secretNumber);
     if (secretNumber.length !== 4 || new Set(secretNumber).size !== 4) {
       alert("Secret number must be 4 unique digits");
       return;
