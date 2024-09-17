@@ -56,11 +56,8 @@ export const getFourDifferentDigits = (
 
     const isValid = digits.every(digit => {
       const isExcluded = excludeDigits.has(digit);
-      console.log(`Digit: ${digit}, isExcluded: ${isExcluded}`);
       return !isExcluded; 
     });
-
-    console.log(`Is the number valid? ${isValid}`);
     return isValid;
   });
 
