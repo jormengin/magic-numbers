@@ -28,9 +28,9 @@ export default function Home() {
         <Link href="/single-player" passHref>
           <Button variant="contained" color="primary">Single Player</Button>
         </Link>
-        <Link href="/multiplayer" passHref>
+        {/* <Link href="/multiplayer" passHref>
           <Button variant="contained" color="secondary">Multiplayer</Button>
-        </Link>
+        </Link> */}
       </Box>
     </Container>
   );

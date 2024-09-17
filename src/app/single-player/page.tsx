@@ -139,12 +139,6 @@ export default function SinglePlayer() {
     });
 
     let machineGuess;
-    console.log("machineGuesses:", machineGuesses);
-    console.log("typeof machineGuesses:", typeof machineGuesses);
-    console.log(
-      "Array.isArray(machineGuesses):",
-      Array.isArray(machineGuesses)
-    );
     // When no previous guesses exist, generate the first guess
     if (machineGuesses.length === 0) {
       machineGuess = generateMachineNumber(newNumberList);
@@ -263,10 +257,10 @@ export default function SinglePlayer() {
         let machineGuess;
         if (currentMachineGuesses.length === 0) {
           machineGuess = generateMachineNumber(newNumberList);
-          console.log(`Machine's guess: ${machineGuess}`);
         } else if (currentMachineGuesses.length === 1) {
+          //TODO improve second guess
           const firstGuessDigits = new Set(
-            currentMachineGuesses[0].split(" - ")[0].split("")
+            currentMachineGuesses[0].split(" - ")[0]
           );
           machineGuess = getFourDifferentDigits(
             firstGuessDigits,
@@ -284,7 +278,7 @@ export default function SinglePlayer() {
         const feedback = checkGuess(machineGuess, secretNumber);
 
         currentMachineGuesses.push(
-          `Machine's guess: ${machineGuess} - ${feedback}`
+          `${machineGuess} - ${feedback}`
         );
         currentMachineFeedback.push({ guess: machineGuess, feedback });
         currentTries++;

@@ -41,9 +41,9 @@ export default function Navbar({ mode, toggleColorMode }: { mode: string, toggle
           <ListItem button component={Link} href="/single-player" onClick={handleDrawerToggle}>
             <ListItemText primary="Single Player" />
           </ListItem>
-          <ListItem button component={Link} href="/multiplayer" onClick={handleDrawerToggle}>
+          {/* <ListItem button component={Link} href="/multiplayer" onClick={handleDrawerToggle}>
             <ListItemText primary="Multiplayer" />
-          </ListItem>
+          </ListItem> */}
         </List>
       </Drawer>
     </>

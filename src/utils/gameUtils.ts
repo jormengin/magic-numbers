@@ -31,19 +31,49 @@ export const generateMachineNumber = (numberList: string[]) => {
 //   console.log(bestGuess);
 //   return bestGuess;
 // };
-export const getFourDifferentDigits = (excludeDigits: Set<string>, numberList: string[]) => {
-  for (let i = 0; i < numberList.length; i++) {
-    const number = numberList[i];
-    const digits = new Set(number.split(''));
-    const intersection = new Set([...excludeDigits].filter(digit => digits.has(digit)));
+// export const getFourDifferentDigits = (excludeDigits: Set<string>, numberList: string[]) => {
+//   for (let i = 0; i < numberList.length; i++) {
+//     const number = numberList[i];
+//     const digits = new Set(number.split(''));
+//     const intersection = new Set([...excludeDigits].filter(digit => digits.has(digit)));
 
-    if (intersection.size === 0) {
-      return number;
-    }
+//     if (intersection.size === 0) {
+//       return number;
+//     }
+//   }
+//   // In case we don't find a number that matches the criteria, just return the first number
+//   return numberList[0];
+// };
+
+//TODO this is useless as always have first play numbers into possible solution
+export const getFourDifferentDigits = (
+  excludeDigits: Set<string>,
+  numberList: string[]
+) => {
+
+  const validNumbers = numberList.filter(number => {
+    const digits = number.split(''); 
+
+    const isValid = digits.every(digit => {
+      const isExcluded = excludeDigits.has(digit);
+      console.log(`Digit: ${digit}, isExcluded: ${isExcluded}`);
+      return !isExcluded; 
+    });
+
+    console.log(`Is the number valid? ${isValid}`);
+    return isValid;
+  });
+
+  if (validNumbers.length > 0) {
+    return validNumbers[0];
+  } else {
+    console.warn('No valid numbers found without common digits, returning fallback.');
+    return numberList[0];
   }
-  // In case we don't find a number that matches the criteria, just return the first number
-  return numberList[0];
 };
+
+
+
 
 export const checkGuess = (guess: string, target: string) => {
   let mates = 0;
