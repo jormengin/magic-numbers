@@ -239,6 +239,8 @@ export default function SinglePlayer() {
   const handleSimulation = () => {
     const numGames = 1000;
     let totalTries = 0;
+    let totalTime = 0;
+    let maxTryTime = 0;
 
     for (let i = 0; i < numGames; i++) {
       const initialNumberList = generateNumberList();
@@ -248,6 +250,7 @@ export default function SinglePlayer() {
       let currentTries = 0;
       console.log(`Game ${i + 1}`);
       while (true) {
+        const startTime = performance.now();
         const newNumberList = initialNumberList.filter((number) => {
           return currentMachineFeedback.every(
             ({ guess, feedback }) => checkGuess(number, guess) === feedback
@@ -282,6 +285,11 @@ export default function SinglePlayer() {
         );
         currentMachineFeedback.push({ guess: machineGuess, feedback });
         currentTries++;
+        const elapsedTime = performance.now() - startTime;
+        totalTime += elapsedTime;
+        if (elapsedTime > maxTryTime) {
+          maxTryTime = elapsedTime;
+        }
 
         if (feedback === "4M 0C") {
           totalTries += currentTries;
@@ -291,9 +299,17 @@ export default function SinglePlayer() {
     }
 
     const averageTries = totalTries / numGames;
-    console.log(`Average tries over ${numGames} games: ${averageTries}`);
+    const averageTryTime = totalTime / totalTries;
+    console.log(`Games: ${numGames}`);
+    console.log(`Avg tries: ${averageTries}`);
+    console.log(`Avg try time: ${averageTryTime} ms`);
+    console.log(`Max try time: ${maxTryTime} ms`);
     alert(
-      `Simulation complete! Average tries over ${numGames} games: ${averageTries}`
+      `Simulation complete!
+      \nGames: ${numGames}
+      \nAvg tries: ${averageTries}
+      \nAvg try time: ${averageTryTime} ms
+      \nMax try time: ${maxTryTime} ms`
     );
   };
 
