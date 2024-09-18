@@ -239,8 +239,11 @@ export default function SinglePlayer() {
   const handleSimulation = () => {
     const numGames = 1000;
     let totalTries = 0;
+    let totalTime = 0;
+    let maxTime = 0;
 
     for (let i = 0; i < numGames; i++) {
+      const startTime = performance.now();
       const initialNumberList = generateNumberList();
       const secretNumber = generateMachineNumber(initialNumberList);
       let currentMachineGuesses: string[] = [];
@@ -288,12 +291,25 @@ export default function SinglePlayer() {
           break;
         }
       }
+      const elapsedTime = performance.now() - startTime;
+      totalTime += elapsedTime;
+      if (elapsedTime > maxTime) {
+        maxTime = elapsedTime;
+      }
     }
 
     const averageTries = totalTries / numGames;
-    console.log(`Average tries over ${numGames} games: ${averageTries}`);
+    const averageTime = totalTime / numGames;
+    console.log(`Games: ${numGames}`);
+    console.log(`Avg tries: ${averageTries}`);
+    console.log(`Avg time: ${averageTime} ms`);
+    console.log(`Max time: ${maxTime} ms`);
     alert(
-      `Simulation complete! Average tries over ${numGames} games: ${averageTries}`
+      `Simulation complete!
+      \nGames: ${numGames}
+      \nAvg tries: ${averageTries}
+      \nAvg time: ${averageTime} ms
+      \nMax time: ${maxTime} ms`
     );
   };
 
