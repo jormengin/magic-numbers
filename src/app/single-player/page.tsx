@@ -299,16 +299,16 @@ export default function SinglePlayer() {
     }
 
     const averageTries = totalTries / numGames;
-    const averageTime = totalTime / numGames;
+    const averageTryTime = totalTime / totalTries;
     console.log(`Games: ${numGames}`);
     console.log(`Avg tries: ${averageTries}`);
-    console.log(`Avg time: ${averageTime} ms`);
+    console.log(`Avg try time: ${averageTryTime} ms`);
     console.log(`Max time: ${maxTime} ms`);
     alert(
       `Simulation complete!
       \nGames: ${numGames}
       \nAvg tries: ${averageTries}
-      \nAvg time: ${averageTime} ms
+      \nAvg try time: ${averageTryTime} ms
       \nMax time: ${maxTime} ms`
     );
   };
